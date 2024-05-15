@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://rendernode-b74i.onrender.com';
 
 export const fetchEmployees = () => {
     return axios.get(`${BASE_URL}/employees`);
