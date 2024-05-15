@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:3001';
+const BASE_URL = 'http://localhost:3000';
 
 export const fetchEmployees = () => {
     return axios.get(`${BASE_URL}/employees`);
