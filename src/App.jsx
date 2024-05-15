@@ -2,8 +2,14 @@ import React, { useState, useEffect } from "react";
 import AddEmployeeForm from "./components/AddEmployeeForm";
 import EmployeeList from "./components/EmployeeList";
 import EditEmployeeForm from "./components/EditEmployeeForm";
-import axios from "axios";
 import "./App.css"
+import {
+  fetchEmployees,
+  addEmployee,
+  editEmployee,
+  deleteEmployee,
+} from "./services/Api";
+
 const App = () => {
   const [employees, setEmployees] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -11,23 +17,17 @@ const App = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    fetchEmployees();
-  }, []);
-
-  const fetchEmployees = () => {
-    axios
-      .get("http://localhost:3001/employees")
+    fetchEmployees()
       .then((response) => {
         setEmployees(response.data);
       })
       .catch((error) => {
         console.error("Error fetching employees: ", error);
       });
-  };
+  }, []);
 
-  const addEmployee = (employee) => {
-    axios
-      .post("http://localhost:3001/employees", employee)
+  const handleAddEmployee = (employee) => {
+    addEmployee(employee)
       .then((response) => {
         setEmployees((prevEmployees) => [...prevEmployees, response.data]);
         setShowModal(false);
@@ -37,9 +37,8 @@ const App = () => {
       });
   };
 
-  const editEmployee = (id, updatedEmployee) => {
-    axios
-      .put(`http://localhost:3001/employees/${id}`, updatedEmployee)
+  const handleEditEmployee = (id, updatedEmployee) => {
+    editEmployee(id, updatedEmployee)
       .then((response) => {
         setEmployees((prevEmployees) =>
           prevEmployees.map((employee) =>
@@ -55,9 +54,8 @@ const App = () => {
       });
   };
 
-  const deleteEmployee = (id) => {
-    axios
-      .delete(`http://localhost:3001/employees/${id}`)
+  const handleDeleteEmployee = (id) => {
+    deleteEmployee(id)
       .then(() => {
         setEmployees((prevEmployees) =>
           prevEmployees.filter((employee) => employee.id !== id)
@@ -66,6 +64,11 @@ const App = () => {
       .catch((error) => {
         console.error("Error deleting employee: ", error);
       });
+  };
+
+  const handleAddEmployeeClick = () => {
+    setIsEditing(false);
+    setShowModal(true);
   };
 
   const startEditing = (employee) => {
@@ -80,11 +83,6 @@ const App = () => {
     setShowModal(false);
   };
 
-  const handleAddEmployeeClick = () => {
-    setIsEditing(false); // Set to false to show AddEmployeeForm
-    setShowModal(true);
-  };
-
   const handleCloseModal = () => {
     setShowModal(false);
   };
@@ -95,7 +93,7 @@ const App = () => {
       <button onClick={handleAddEmployeeClick}>Add Employee</button>
       <EmployeeList
         employees={employees}
-        deleteEmployee={deleteEmployee}
+        deleteEmployee={handleDeleteEmployee}
         startEditing={startEditing}
       />
       {showModal && (
@@ -107,11 +105,11 @@ const App = () => {
             {isEditing ? (
               <EditEmployeeForm
                 employee={editingEmployee}
-                editEmployee={editEmployee}
+                editEmployee={handleEditEmployee}
                 stopEditing={stopEditing}
               />
             ) : (
-              <AddEmployeeForm addEmployee={addEmployee} />
+              <AddEmployeeForm addEmployee={handleAddEmployee} />
             )}
           </div>
         </div>
@@ -119,5 +117,4 @@ const App = () => {
     </div>
   );
 };
-
 export default App;
